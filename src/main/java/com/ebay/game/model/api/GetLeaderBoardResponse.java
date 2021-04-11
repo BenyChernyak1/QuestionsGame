@@ -1,6 +1,5 @@
 package com.ebay.game.model.api;
 
-import java.util.HashMap;
 import java.util.Map;
 
 public class GetLeaderBoardResponse extends BaseResponse{

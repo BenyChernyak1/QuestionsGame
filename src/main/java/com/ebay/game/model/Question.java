@@ -10,7 +10,7 @@ public class Question {
 
     private String text;
 
-    private Map<Integer, String> answers = new HashMap<>();
+    private Map<Integer, String> answers;
 
     private Map<UUID, Integer> playersAnswers = new HashMap<>();
 
@@ -18,11 +18,10 @@ public class Question {
 
     private List<Player> players = new ArrayList<>();
 
-    public Question(UUID id, String text, Map<Integer, String> answers, Player player) {
+    public Question(UUID id, String text, Map<Integer, String> answers) {
         this.id = id;
         this.text = text;
         this.answers = answers;
-//        players.add(player);
         status = Status.Pending;
     }
 

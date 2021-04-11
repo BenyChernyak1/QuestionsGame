@@ -18,11 +18,6 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 		ignoreResourceNotFound = true)
 public class GameApplication {
 
-	@Bean
-	public RestTemplate restTemplate() {
-		return new RestTemplate();
-	}
-
 	public static void main(String[] args) {
 		SpringApplication.run(GameApplication.class, args);
 	}

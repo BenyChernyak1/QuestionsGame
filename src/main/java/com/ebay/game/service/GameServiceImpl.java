@@ -17,9 +17,7 @@ import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
 import org.springframework.amqp.core.Message;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
 
 import java.lang.reflect.Type;
 import java.util.*;
@@ -28,9 +26,6 @@ import java.util.stream.IntStream;
 
 @Service
 public class GameServiceImpl implements GameService {
-
-    @Autowired
-    RestTemplate restTemplate;
 
     private List<Game> games = new ArrayList<>();
 
@@ -73,7 +68,7 @@ public class GameServiceImpl implements GameService {
             Question question = new Question(
                     UUID.randomUUID(),
                     externalQuestionMessage.getResults().get(0).getQuestion(),
-                    internalAnswers, newPlayer);
+                    internalAnswers);
             Game game = new Game(questionMessage.getGameId(), question, newPlayer);
             games.add(game);
 
@@ -181,13 +176,7 @@ public class GameServiceImpl implements GameService {
 
         // Creates the json object which will manage the information received
         GsonBuilder builder = new GsonBuilder();
-
-        // Register an adapter to manage the date types as long values
-        builder.registerTypeAdapter(Date.class, new JsonDeserializer<Date>() {
-            public Date deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
-                return new Date(json.getAsJsonPrimitive().getAsLong());
-            }
-        });
+        manageDateParsing(builder);
 
         Gson gson = builder.create();
 
@@ -201,14 +190,19 @@ public class GameServiceImpl implements GameService {
         GsonBuilder builder = new GsonBuilder();
 
         // Register an adapter to manage the date types as long values
+        manageDateParsing(builder);
+
+        Gson gson = builder.create();
+
+        return gson.fromJson(messageString, AnswerMessage.class);
+    }
+
+    private void manageDateParsing(GsonBuilder builder) {
+        // Register an adapter to manage the date types as long values
         builder.registerTypeAdapter(Date.class, new JsonDeserializer<Date>() {
             public Date deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
                 return new Date(json.getAsJsonPrimitive().getAsLong());
             }
         });
-
-        Gson gson = builder.create();
-
-        return gson.fromJson(messageString, AnswerMessage.class);
     }
 }
