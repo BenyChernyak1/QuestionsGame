@@ -27,7 +27,7 @@ import java.util.stream.IntStream;
 @Service
 public class GameServiceImpl implements GameService {
 
-    private List<Game> games = new ArrayList<>();
+    private final List<Game> games = new ArrayList<>();
 
     private static final ObjectMapper mapper = new ObjectMapper();
 
