@@ -42,7 +42,6 @@ public class GameServiceImpl implements GameService {
         if (games.stream().anyMatch(game -> game.getId() == questionMessage.getGameId())) {
             games.stream().filter(game -> game.getId() == questionMessage.getGameId()).forEach(
                 game -> {
-//                    game.getPlayers().add(newPlayer);
                     getQuestionResponse[0] = new GetQuestionResponse(game.getId(), game.getQuestion().getId(), game.getQuestion().getText(), new ArrayList<>(game.getQuestion().getAnswers().values()));
                 }
             );
