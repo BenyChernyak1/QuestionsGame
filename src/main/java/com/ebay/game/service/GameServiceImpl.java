@@ -64,7 +64,7 @@ public class GameServiceImpl implements GameService {
             Map<Integer, String> internalAnswers = IntStream
                     .range(0, possibleAnswers.size())
                     .boxed()
-                    .collect(Collectors.toMap(i -> i, possibleAnswers::get));
+                    .collect(Collectors.toMap(i -> i+1, possibleAnswers::get));
             Question question = new Question(
                     UUID.randomUUID(),
                     externalQuestionMessage.getResults().get(0).getQuestion(),

@@ -60,7 +60,7 @@ public class GameControllerImpl implements GameController{
         try {
             Preconditions.checkArgument(username != null);
             Preconditions.checkArgument(gameId > 0);
-            Preconditions.checkArgument(answerId >= 0 && answerId < 4);
+            Preconditions.checkArgument(answerId >= 1 && answerId < 5);
             Preconditions.checkArgument(questionId != null);
 
             //create answers message
