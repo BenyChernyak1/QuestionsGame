@@ -15,10 +15,9 @@ public class Game {
 
     private Map<String, Integer> leaderboard = new HashMap<>();
 
-    public Game(int id, Question question, Player player) {
+    public Game(int id, Question question) {
         this.id = id;
         this.question = question;
-        this.players.add(player);
     }
 
     public int getId() {

@@ -16,8 +16,6 @@ public class Question {
 
     private int currentPlayersNumber;
 
-    private List<Player> players = new ArrayList<>();
-
     public Question(UUID id, String text, Map<Integer, String> answers) {
         this.id = id;
         this.text = text;
@@ -73,14 +71,6 @@ public class Question {
         this.currentPlayersNumber = currentPlayersNumber;
     }
 
-    public List<Player> getPlayers() {
-        return players;
-    }
-
-    public void setPlayers(List<Player> players) {
-        this.players = players;
-    }
-
     public void incrementPlayersNumber() {
         this.currentPlayersNumber++;
     }
@@ -94,7 +84,6 @@ public class Question {
                 ", answers=" + answers +
                 ", playersAnswers=" + playersAnswers +
                 ", currentPlayersNumber=" + currentPlayersNumber +
-                ", players=" + players +
                 '}';
     }
 }

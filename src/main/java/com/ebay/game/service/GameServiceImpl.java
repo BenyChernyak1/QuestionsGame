@@ -42,7 +42,7 @@ public class GameServiceImpl implements GameService {
         if (games.stream().anyMatch(game -> game.getId() == questionMessage.getGameId())) {
             games.stream().filter(game -> game.getId() == questionMessage.getGameId()).forEach(
                 game -> {
-                    game.getPlayers().add(newPlayer);
+//                    game.getPlayers().add(newPlayer);
                     getQuestionResponse[0] = new GetQuestionResponse(game.getId(), game.getQuestion().getId(), game.getQuestion().getText(), new ArrayList<>(game.getQuestion().getAnswers().values()));
                 }
             );
@@ -69,7 +69,7 @@ public class GameServiceImpl implements GameService {
                     UUID.randomUUID(),
                     externalQuestionMessage.getResults().get(0).getQuestion(),
                     internalAnswers);
-            Game game = new Game(questionMessage.getGameId(), question, newPlayer);
+            Game game = new Game(questionMessage.getGameId(), question);
             games.add(game);
 
             return new GetQuestionResponse(game.getId(), game.getQuestion().getId(), game.getQuestion().getText(), new ArrayList<>(game.getQuestion().getAnswers().values()));
@@ -89,15 +89,6 @@ public class GameServiceImpl implements GameService {
             answerQuestionResponse.setErrorMessage("No question with ID " + answerMessage.getQuestionId() + " found");
         }
 
-//        if (games.stream()
-//                .filter(game -> game.getId() == answerMessage.getGameId())
-//                .flatMap(game -> game.getPlayers().stream())
-//                .anyMatch(player ->
-//                        player.getPointsPerQuestion().getOrDefault(UUID.fromString(answerMessage.getQuestionId()), 0) == Constants.POINTS_FOR_RIGHT_ANSWER)) {
-//            answerQuestionResponse.setErrorMessage("You have already answer this question with ID " + answerMessage.getQuestionId() + " found");
-//            return answerQuestionResponse;
-//        }
-
         games.stream().filter(game -> game.getId() == answerMessage.getGameId()).forEach(
                 game -> {
                     Question question = game.getQuestion();
@@ -112,18 +103,30 @@ public class GameServiceImpl implements GameService {
         }
 
         Player newPlayer = new Player(answerMessage.getUsername());
+
+        if (games.stream()
+                .filter(game -> game.getId() == answerMessage.getGameId())
+                .flatMap(game -> game.getPlayers().stream())
+                .filter(player -> player.getUsername().equalsIgnoreCase(newPlayer.getUsername()))
+                .anyMatch(player ->
+                        player.getPointsPerQuestion().getOrDefault(UUID.fromString(answerMessage.getQuestionId()), -1) != -1)) {
+            answerQuestionResponse.setErrorMessage("You have already answer this question with ID " + answerMessage.getQuestionId());
+            return answerQuestionResponse;
+        }
+
+        newPlayer.setPointsPerQuestion(new HashMap<UUID, Integer>(){{put(UUID.fromString(answerMessage.getQuestionId()), 0);}});
         games.stream().filter(game -> game.getId() == answerMessage.getGameId()).forEach(
                 game -> {
                     Question question = game.getQuestion();
                     question.getPlayersAnswers().put(newPlayer.getId(), answerMessage.getAnswerId());
-                    question.getPlayers().add(newPlayer);
+                    game.getPlayers().add(newPlayer);
                     question.incrementPlayersNumber();
                     if(question.getCurrentPlayersNumber() >= Constants.MIN_PLAYERS_NUM) {
                         int answerFrequency = Collections.frequency(question.getPlayersAnswers().values(), answerMessage.getAnswerId());
                         if(answerFrequency*100/question.getCurrentPlayersNumber() >= Constants.RIGHT_ANSWER_CALC_IN_PERCENT) {
                             question.setStatus(Status.Resolved);
                             question.getPlayersAnswers().entrySet().stream().filter(uuidIntegerEntry -> uuidIntegerEntry.getValue() == answerMessage.getAnswerId()).forEach(
-                                    uuidIntegerEntry -> question.getPlayers().stream().filter(player -> player.getId().equals(uuidIntegerEntry.getKey())).forEach(
+                                    uuidIntegerEntry -> game.getPlayers().stream().filter(player -> player.getId().equals(uuidIntegerEntry.getKey())).forEach(
                                             player -> {
                                                 player.addPointsPerQuestion(question.getId());
                                                 if (game.getLeaderboard().containsKey(player.getUsername())) {
